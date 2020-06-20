@@ -7,6 +7,9 @@
 
 #include "9cc.h"
 
+// This global array is to store the node which is processed by the parser.
+Node *code[100];
+
 
 int main(int argc, char **argv) {
     if (argc != 2) {

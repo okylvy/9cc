@@ -7,10 +7,10 @@
 
 //** Tokenizer **//
 
-
 // token type
 typedef enum {
     TK_RESERVED,  // symbol
+    TK_IDENT,     // identifier
     TK_NUM,       // integer
     TK_EOF,       // end of input
 } TokenKind;
@@ -75,6 +75,9 @@ Node *equality();
 Node *relational();
 Node *add();
 Node *mul();
-Node *primary();
 Node *unary();
+Node *primary();
+
+
+//** Code generator **//
 void gen(Node *node);
