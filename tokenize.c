@@ -1,4 +1,4 @@
-#include "9cc.h"
+#include "hicc.h"
 
 
 //** Tokenizer **//
@@ -44,6 +44,7 @@ bool at_eof() {
     return token->kind == TK_EOF;
 }
 
+// Store the current token information.
 Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     Token *tok = calloc(1, sizeof(Token));
     tok->kind = kind;
@@ -81,7 +82,8 @@ Token *tokenize() {
 
         // Single-letter punctuator
         if (strchr("+-*/()<>", *p)) {
-            cur = new_token(TK_RESERVED, cur, p++, 1);
+            cur = new_token(TK_RESERVED, cur, p, 1);
+            p++;
             continue;
         }
 
@@ -96,13 +98,14 @@ Token *tokenize() {
 
         // Character
         if ('a' <= *p && *p <= 'z') {
-            cur = new_token(TK_IDENT, cur, p++, 1);
+            cur = new_token(TK_IDENT, cur, p, 1);
+            p++;
             continue;
         }
 
         error_at(p, "Can't tokenize.");
     }
-
     new_token(TK_EOF, cur, p, 0);
+
     return head.next;
 }

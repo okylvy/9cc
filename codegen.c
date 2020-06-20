@@ -1,4 +1,4 @@
-#include "9cc.h"
+#include "hicc.h"
 
 
 void gen(Node *node) {

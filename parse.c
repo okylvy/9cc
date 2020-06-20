@@ -1,14 +1,17 @@
-#include "9cc.h"
+#include "hicc.h"
 
 
-Node *new_node(NodeKind kind) {
+//Node *new_node(NodeKind kind) {
+Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
+    node->lhs = lhs;
+    node->rhs = rhs;
     return node;
 }
 
 Node *new_binary(NodeKind kind, Node *lhs, Node *rhs) {
-    Node *node = new_node(kind);
+    Node *node = new_node(kind, lhs, rhs);
     node->lhs = lhs;
     node->rhs = rhs;
     return node;
@@ -21,9 +24,32 @@ Node *new_node_num(int val) {
     return node;
 }
 
-Node *expr() {
-    return equality();
+void program() {
+    extern Node *code[100];
+
+    int i = 0;
+    while (!at_eof())
+        code[i++] = stmt();
+    code[i] = NULL;
 }
+
+Node *stmt() {
+    Node *node = expr();
+    expect(";");
+    return node;
+}
+
+Node *expr() {
+    return assign();
+}
+
+Node *assign() {
+    Node *node = equality();
+    if (consume("="))
+        node = new_node(ND_ASSIGN, node, assign());
+    return node;
+}
+
 
 Node *equality() {
     Node *node = relational();
@@ -95,6 +121,9 @@ Node *primary() {
         expect(")");
         return node;
     }
+
+// TODO: Add to return ND_LVAR node.
+//    Token *tok = consume_ident();
 
     return new_node_num(expect_number());
 }
