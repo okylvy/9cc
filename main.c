@@ -23,18 +23,12 @@ int main(int argc, char **argv) {
     token = tokenize(user_input);
 
     // The bridge between tokenizer and parser is consume().
-    Node *node = expr();
-//TODO: Modify parse.c and call program() (maybe..)
-//    Node *node = stmt();
-
-    printf(".intel_syntax noprefix\n");
-    printf(".global main\n");
-    printf("main:\n");
+//    Node *node = expr();
+    program();
 
     // traverse the AST to emit assembly
-    gen(node);
+//    codegen(node);
+    codegen(*code);
 
-    printf("    pop rax\n");
-    printf("    ret\n");
     return 0;
 }

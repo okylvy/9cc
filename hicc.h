@@ -86,4 +86,5 @@ Node *primary();
 
 
 //** codegen.c **//
+void codegen(Node *node);
 void gen(Node *node);

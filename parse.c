@@ -29,7 +29,9 @@ void program() {
 
     int i = 0;
     while (!at_eof())
-        code[i++] = stmt();
+// TODO: User stmt() to parse ";".
+//        code[i++] = stmt();
+        code[i++] = expr();
     code[i] = NULL;
 }
 
@@ -49,7 +51,6 @@ Node *assign() {
         node = new_node(ND_ASSIGN, node, assign());
     return node;
 }
-
 
 Node *equality() {
     Node *node = relational();

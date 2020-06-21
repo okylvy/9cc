@@ -1,6 +1,17 @@
 #include "hicc.h"
 
 
+void codegen(Node *node) {
+    printf(".intel_syntax noprefix\n");
+    printf(".global main\n");
+    printf("main:\n");
+
+    gen(node);
+
+    printf("    pop rax\n");
+    printf("    ret\n");
+}
+
 void gen(Node *node) {
     if (node->kind == ND_NUM) {
         printf("    push %d\n", node->val);
