@@ -30,8 +30,8 @@ void program() {
     int i = 0;
     while (!at_eof())
 // TODO: User stmt() to parse ";".
-//        code[i++] = stmt();
-        code[i++] = expr();
+        code[i++] = stmt();
+//        code[i++] = expr();
     code[i] = NULL;
 }
 
@@ -124,7 +124,13 @@ Node *primary() {
     }
 
 // TODO: Add to return ND_LVAR node.
-//    Token *tok = consume_ident();
+    Token *tok = consume_ident();
+    if (tok) {
+        Node *node = calloc(1, sizeof(Node));
+        node->kind = ND_LVAR;
+        node->offset = (tok->str[0] - 'a' + 1) * 8;
+        return node;
+    }
 
     return new_node_num(expect_number());
 }

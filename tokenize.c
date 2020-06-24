@@ -24,6 +24,14 @@ bool consume(char *op) {
     return true;
 }
 
+Token *consume_ident(void) {
+    if (token->kind != TK_IDENT)
+        return NULL;
+    Token *t = token;
+    token = token->next;
+    return t;
+}
+
 void expect(char *op) {
     if (token->kind != TK_RESERVED ||
         strlen(op) != token->len ||
@@ -81,7 +89,7 @@ Token *tokenize() {
             }
 
         // Single-letter punctuator
-        if (strchr("+-*/()<>", *p)) {
+        if (strchr("+-*/()<>=;", *p)) {
             cur = new_token(TK_RESERVED, cur, p, 1);
             p++;
             continue;

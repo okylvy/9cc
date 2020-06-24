@@ -23,12 +23,10 @@ int main(int argc, char **argv) {
     token = tokenize(user_input);
 
     // The bridge between tokenizer and parser is consume().
-//    Node *node = expr();
     program();
 
     // traverse the AST to emit assembly
-//    codegen(node);
-    codegen(*code);
+    codegen();
 
     return 0;
 }

@@ -33,6 +33,7 @@ char *user_input;
 // function prototype
 void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
+Token *consume_ident(void);
 void expect(char *op);
 int expect_number();
 bool at_eof();
@@ -86,5 +87,6 @@ Node *primary();
 
 
 //** codegen.c **//
-void codegen(Node *node);
+void codegen();
+void gen_lval(Node *node);
 void gen(Node *node);
