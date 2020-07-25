@@ -1,7 +1,7 @@
 version: "3.7"
 services:
-  app:
+  hicc:
     build: .
     volumes:
-      - "./:/home/user/data"
+      - "./:/home/user"
     tty: true

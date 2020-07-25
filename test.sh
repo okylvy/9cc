@@ -33,9 +33,19 @@ CMT
 #assert 2 '0+1+3-2;
 
 assert 5 'a=2; b=3; a+b;'
-assert 20 'f=4; z=5; f*z;'
-# FIXME: Return invalid value below
-# assert 325 'f=13; z=25; f*z;'
+assert 20 'f=4; z = 5; f*z;'
+# FIXME: Get wrong value below
+#assert 325 'f=13; z=25; f*z;'
+
+# Multiple local variables.
+assert 7 'f = 3; b = 2 * 2; return f + b;'
+# FIXME: In case that variables are string, it returns the value of last variable.
+#   For instance, you get 4 (=bar) below.
+#assert 7 'foo = 3; bar = 2 * 2; return foo + bar;'
+
+# return statement.
+assert 8 'a=2; b=3*2; a+b;'
+assert 4 'a=2; b=3*2; return b - a;'
 
 #assert 1 'main () {1==1;}'
 #assert 0 'main () {1==0;}'

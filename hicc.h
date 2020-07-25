@@ -12,6 +12,7 @@ typedef enum {
     TK_RESERVED,  // symbol
     TK_IDENT,     // identifier
     TK_NUM,       // integer
+    TK_RETURN,    // return
     TK_EOF,       // end of input
 } TokenKind;
 
@@ -30,10 +31,18 @@ Token *token;
 // input program
 char *user_input;
 
+typedef struct LVar LVar;
+// type of local valuable
+struct LVar {
+    LVar *next;
+    char *name;
+    int len;
+    int offset;
+};
+
 // function prototype
 void error_at(char *loc, char *fmt, ...);
-bool consume(char *op);
-Token *consume_ident(void);
+int is_alnum(char c);
 void expect(char *op);
 int expect_number();
 bool at_eof();
@@ -57,6 +66,7 @@ typedef enum {
     ND_ASSIGN, // =
     ND_LVAR,   // Local value
     ND_NUM,    // Integer
+    ND_RETURN, // return
 } NodeKind;
 
 typedef struct Node Node;
@@ -71,6 +81,11 @@ struct Node {
 
 // function prototype
 //Node *new_node(NodeKind kind);
+bool equal(Token *tok, char *op);
+Token *skip(char *op);
+bool consume(char *op);
+Token *consume_ident(void);
+bool consume_return();
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_binary(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
@@ -84,6 +99,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+LVar *find_lvar(Token *tok);
 
 
 //** codegen.c **//
