@@ -1,9 +1,11 @@
 #include "hicc.h"
 
+static int label_seq = 0;
 
-void codegen() {
-    extern Node *code[100];
-
+/**
+ * 
+ */
+void codegen(Node *node) {
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
     printf("main:\n");
@@ -14,9 +16,12 @@ void codegen() {
     printf("    mov rbp, rsp\n");
     printf("    sub rsp, %d\n", area_for_26_chars);
 
-    for (int i = 0; code[i]; i++) {
-        gen(code[i]);
+    while (node) {
+        gen(node);
+
+        // Evaluation result of statement should be remaining on stack.
         printf("    pop rax\n");
+        node = node->next;
     }
 
     // Epilogue.
@@ -25,6 +30,9 @@ void codegen() {
     printf("    ret\n");
 }
 
+/**
+ * 
+ */
 void gen_lval(Node *node) {
     if (node->kind != ND_LVAR)
         perror("Left value is not a valuable.");
@@ -34,33 +42,69 @@ void gen_lval(Node *node) {
     printf("    push rax\n");
 }
 
+/**
+ * 
+ */
 void gen(Node *node) {
     switch (node->kind) {
         case ND_NUM:
-            printf("    push %d\n", node->val);
-            return;
+            {
+                printf("    push %d\n", node->val);
+                return;
+            }
         case ND_LVAR:
-            gen_lval(node);
-            printf("    pop rax\n");
-            printf("    mov rax, [rax]\n");
-            printf("    push rax\n");
-            return;
+            {
+                gen_lval(node);
+                printf("    pop rax\n");
+                printf("    mov rax, [rax]\n");
+                printf("    push rax\n");
+                return;
+            }
         case ND_ASSIGN:
-            gen_lval(node->lhs);
-            gen(node->rhs);
-            printf("    pop rdi\n");
-            printf("    pop rax\n");
-            printf("    mov [rax], rdi\n");
-            printf("    push rdi\n");
-            return;
-
+            {
+                gen_lval(node->lhs);
+                gen(node->rhs);
+                printf("    pop rdi\n");
+                printf("    pop rax\n");
+                printf("    mov [rax], rdi\n");
+                printf("    push rdi\n");
+                return;
+            }
         case ND_RETURN:
-            gen(node->lhs);
-            printf("    pop rax\n");
-            printf("    mov rsp, rbp\n");
-            printf("    pop, rbp\n");
-            printf("    ret\n");
-            return;
+            {
+                gen(node->lhs);
+                printf("    pop rax\n");
+                printf("    mov rsp, rbp\n");
+                printf("    pop rbp\n");
+                printf("    ret\n");
+                return;
+            }
+        case ND_IF:
+            {
+                int seq = label_seq++;
+                if (node->els) {
+                    gen(node->cond);
+                    printf("    pop rax\n");
+                    printf("    cmp rax, 0\n");
+                    printf("    je .Lelse%d\n", seq);
+
+                    gen(node->then);
+                    printf("    jmp .Lend%d\n", seq);
+                    printf(".Lelse:%d\n", seq);
+
+                    gen(node->els);
+                    printf(".Lend%d:\n", seq);
+                } else {
+                    gen(node->cond);
+                    printf("    pop rax\n");
+                    printf("    cmp rax, 0\n");
+                    printf("    je .Lend%d\n", seq);
+
+                    gen(node->then);
+                    printf(".Lend%d:\n", seq++);
+                }
+                return;
+            }
     }
 
     gen(node->lhs);

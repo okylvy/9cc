@@ -7,26 +7,43 @@
 
 #include "hicc.h"
 
-// This global array is to store the node which is processed by the parser.
-Node *code[100];
+char *user_input;  // Input program.
 
+/**
+ * Points out the location where an error happens.
+ */
+void error_at(char *loc, char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
 
+    int pos = loc - user_input;
+    fprintf(stderr, "%s\n", user_input);
+    fprintf(stderr, "%*s", pos, "");
+    fprintf(stderr, "^ ");
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    exit(1);
+}
+
+/**
+ * Main function.
+ */
 int main(int argc, char **argv) {
+    // Check arguments passed by user.
     if (argc != 2) {
         fprintf(stderr, "The number of arguments is not correct.");
         return 1;
-
     }
 
-    // tokenize and parse
+    // Tokenize and parse.
     user_input = argv[1];
-    token = tokenize(user_input);
+    Token *token = tokenize(user_input);
 
     // The bridge between tokenizer and parser is consume().
-    program();
+    Node *node = program(token);
 
-    // traverse the AST to emit assembly
-    codegen();
+    // Traverse the AST to emit assembly.
+    codegen(node);
 
     return 0;
 }
